@@ -1,0 +1,12 @@
+name = "travel-ledger"
+main = "worker.js"
+compatibility_date = "2024-09-23"
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+
+# Create this KV namespace once (see README), then paste its id below.
+[[kv_namespaces]]
+binding = "LEDGER_KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
