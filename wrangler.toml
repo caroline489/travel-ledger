@@ -9,4 +9,4 @@ binding = "ASSETS"
 # Create this KV namespace once (see README), then paste its id below.
 [[kv_namespaces]]
 binding = "LEDGER_KV"
-id = "03be3e91f961498996bf76e3c39caced"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
