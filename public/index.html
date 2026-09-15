@@ -221,6 +221,8 @@
     <hr class="rule">
   </header>
 
+  <div id="syncWarning" style="display:none; background:#A64B3F; color:#fff; padding:11px 14px; border-radius:8px; font-size:13px; margin-bottom:16px; font-weight:600; line-height:1.5;"></div>
+
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="ledger">Ledger</button>
     <button class="tab-btn" data-tab="balances">Balances</button>
@@ -321,6 +323,15 @@
   const $ = (id) => document.getElementById(id);
   let saveTimer = null;
 
+  function showSyncWarning(msg){
+    const el = $('syncWarning');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+  function hideSyncWarning(){
+    $('syncWarning').style.display = 'none';
+  }
+
   async function loadState(){
     // 1) instant local copy — works with zero network, even the first time offline after one visit
     try{
@@ -330,9 +341,14 @@
     renderAll();
     $('statusLine').textContent = 'Loaded';
 
-    // 2) try to pull the shared copy from the server (silently skipped if offline)
+    // 2) try to pull the shared copy from the server
     try{
       const res = await fetch(API, { cache: 'no-store' });
+      if(res.status === 401){
+        showSyncWarning('⚠️ Not logged in — this device is NOT synced with the shared ledger. Reload the page and log in, or your edits will only save locally and may be lost.');
+        $('statusLine').textContent = 'Not logged in';
+        return;
+      }
       if(res.ok){
         const text = await res.text();
         if(text && text !== '{}'){
@@ -340,10 +356,14 @@
           localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
           renderAll();
         }
+        hideSyncWarning();
+      } else {
+        showSyncWarning('⚠️ Could not reach the shared ledger (server error). Showing your last saved copy — new edits may not sync until this is resolved.');
       }
       $('statusLine').textContent = 'Synced';
     }catch(err){
       $('statusLine').textContent = 'Offline — showing your last saved copy';
+      showSyncWarning('⚠️ Offline — showing your last saved copy. New edits are saved on this device but will only sync once you\'re back online.');
     }
   }
 
@@ -359,8 +379,18 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(state)
         });
-        $('statusLine').textContent = res.ok ? 'Saved · synced' : 'Saved on this device only';
+        if(res.status === 401){
+          showSyncWarning('⚠️ Not logged in — this edit was NOT saved to the shared ledger, only on this device. Reload the page and log in to fix this.');
+          $('statusLine').textContent = 'NOT synced — not logged in';
+        } else if(res.ok){
+          hideSyncWarning();
+          $('statusLine').textContent = 'Saved · synced';
+        } else {
+          showSyncWarning('⚠️ This edit was NOT saved to the shared ledger (server error) — only on this device.');
+          $('statusLine').textContent = 'Saved on this device only';
+        }
       }catch(err){
+        showSyncWarning('⚠️ Offline — this edit is saved on this device only. It will sync automatically once you\'re back online (keep this tab open, or reopen it before clearing browser data).');
         $('statusLine').textContent = 'Saved on this device — will sync when back online';
       }
     }, 350);
