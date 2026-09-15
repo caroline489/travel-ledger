@@ -59,23 +59,6 @@
   }
   .rule{ height:1px; background: var(--line); border:none; margin: 14px 0 0; }
 
-  /* ---------- Travelers ---------- */
-  .travelers-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin: 16px 0 4px; }
-  .traveler-chip{
-    display:flex; align-items:center;
-    background: var(--paper-raised);
-    border:1px solid var(--line);
-    border-radius: 999px;
-    padding: 6px 4px 6px 14px;
-    min-height: 38px;
-  }
-  .traveler-chip input{
-    border:none; background:transparent; outline:none;
-    font-family:var(--font-sans); font-weight:500; color:var(--ink);
-    width: 84px; font-size: 14.5px;
-  }
-  .traveler-vs{ color: var(--ink-soft); font-size: 13.5px; font-style: italic; }
-
   section{ margin-top: 26px; }
 
   /* ---------- Tabs ---------- */
@@ -111,7 +94,6 @@
     grid-template-columns: 1fr;
     gap: 12px;
   }
-  .field-row{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
   label.field-label{
     display:block; font-size:11.5px; color:var(--ink-soft); margin-bottom:5px;
   }
@@ -124,8 +106,8 @@
   }
   input:focus, select:focus{ border-color: var(--teal); }
   .amount-field{ display:flex; gap:8px; }
-  .amount-field input[type=number]{ text-align:right; font-variant-numeric: tabular-nums; }
-  .amount-field input[type=text]{ width:76px; flex:0 0 76px; text-transform:uppercase; text-align:center; }
+  .amount-field input[type=number]{ text-align:right; font-variant-numeric: tabular-nums; min-width:0; flex:1 1 auto; }
+  .amount-field select{ width:84px; flex:0 0 84px; text-align:center; padding-left:6px; }
   .btn{
     border:none; border-radius:8px; padding:12px 18px; min-height: var(--tap);
     font-family:var(--font-sans); font-weight:600; font-size:15px;
@@ -135,33 +117,36 @@
   .btn-primary:active{ background: var(--teal-deep); }
   .form-actions{ margin-top:14px; }
 
-  /* ---------- Expense list (card style, works at any width) ---------- */
+  /* ---------- Expense list (read-only cards, colour-coded by payer) ---------- */
   .expense-card{
-    background: var(--paper-raised); border:1px solid var(--line-soft); border-radius: var(--radius);
-    padding: 12px 14px; margin-bottom: 10px;
+    border-radius: var(--radius);
+    padding: 10px 14px 6px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--line);
   }
-  .expense-card-top{ display:flex; align-items:flex-start; gap:8px; }
-  .expense-card-top input[type=text]{ font-weight:600; }
-  .expense-card-top .row-delete{ flex:0 0 auto; margin-top:2px; }
-  .expense-card .desc-field{ margin-top:8px; }
-  .expense-card .meta-row{
-    display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center;
+  .expense-card.by-0{ background: #EAF1ED; border-left-color: var(--teal); }
+  .expense-card.by-1{ background: #FBEADD; border-left-color: var(--gold); }
+  .expense-card .info{ flex: 1 1 auto; min-width:0; }
+  .expense-card .line1{
+    display:flex; justify-content:space-between; align-items:baseline; gap:8px;
   }
-  .expense-card .meta-row > *{ flex:1 1 120px; min-width: 100px; }
-  .expense-card input, .expense-card select{
-    border:1px solid transparent; background:transparent; padding:6px 7px;
-    border-radius:7px; font-size:14.5px; min-height:38px;
+  .expense-card .place{ font-weight:600; font-size:14.5px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .expense-card .amt{ font-family:var(--font-mono); font-size:14.5px; white-space:nowrap; flex:0 0 auto; }
+  .expense-card .line2{
+    display:flex; justify-content:space-between; align-items:baseline; gap:8px;
+    margin-top:2px; font-size:12.5px; color:var(--ink-soft);
   }
-  .expense-card input:hover, .expense-card select:hover{ background:#fff; border-color:var(--line); }
-  .expense-card input:focus, .expense-card select:focus{ background:#fff; border-color:var(--teal); }
-  .expense-card .amt-cell{ display:flex; gap:6px; flex:1 1 160px; }
-  .expense-card .amt-cell input[type=number]{ text-align:right; font-variant-numeric: tabular-nums; flex:1 1 auto; min-width:0; }
-  .expense-card .amt-cell select{ flex:0 0 66px; padding-left:4px; }
-  .row-delete{
+  .expense-card .desc{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1 1 auto; min-width:0; }
+  .expense-card .who-date{ flex:0 0 auto; white-space:nowrap; }
+  .expense-card .card-footer{
+    margin-top:8px; padding-top:6px; border-top:1px solid rgba(0,0,0,0.07);
+    display:flex; justify-content:flex-start;
+  }
+  .delete-link{
     border:none; background:transparent; color:var(--ink-soft); cursor:pointer;
-    font-size:18px; width:34px; height:34px; border-radius:50%; flex:0 0 34px;
+    font-size:12px; padding:4px 2px; opacity:0.75; text-decoration:underline;
   }
-  .row-delete:active{ background:#f1e4e0; color:var(--owe); }
+  .delete-link:active{ color:var(--owe); opacity:1; }
   .empty-state{
     color:var(--ink-soft); font-style:italic; padding:24px 14px; text-align:center;
     border:1px dashed var(--line); border-radius: var(--radius);
@@ -217,8 +202,7 @@
   @media (min-width: 640px){
     body{ padding: 32px 20px 90px; }
     .wrap{ max-width: 760px; }
-    .form-grid{ grid-template-columns: 1.1fr 1.6fr 0.9fr 1fr; }
-    .field-row{ grid-column: span 1; display:contents; }
+    .form-grid{ grid-template-columns: 1.1fr 1.5fr 0.85fr 0.85fr 0.9fr; }
     .currency-grid{ grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); }
     .form-actions{ display:flex; justify-content:flex-end; }
     .btn{ width:auto; }
@@ -229,14 +213,13 @@
 <div class="wrap">
 
   <header>
+    <div style="display:flex; justify-content:flex-end;">
+      <a href="https://trip-itinerary.caroline-8f6.workers.dev" target="_blank" rel="noopener" style="font-size:12.5px; color:var(--ink-soft); text-decoration:none; border-bottom:1px dotted var(--ink-soft);">→ 行程表</a>
+    </div>
     <input id="tripTitle" class="title-input" value="Spain Trip" spellcheck="false">
     <input id="tripSubtitle" class="subtitle-input" value="Sep 22 – Oct 7 · shared ledger" spellcheck="false">
     <hr class="rule">
   </header>
-
-  <section id="travelersSection" style="margin-top:0;">
-    <div class="travelers-bar" id="travelersBar"></div>
-  </section>
 
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="ledger">Ledger</button>
@@ -256,21 +239,24 @@
             <label class="field-label">Description</label>
             <input type="text" id="f-desc" placeholder="10.7 chartered taxi">
           </div>
-          <div class="field-row">
-            <div>
-              <label class="field-label">Date</label>
-              <input type="date" id="f-date">
-            </div>
-            <div>
-              <label class="field-label">Paid by</label>
-              <select id="f-paidby"></select>
-            </div>
+          <div>
+            <label class="field-label">Date</label>
+            <input type="date" id="f-date">
+          </div>
+          <div>
+            <label class="field-label">Paid by</label>
+            <select id="f-paidby"></select>
           </div>
           <div>
             <label class="field-label">Amount</label>
             <div class="amount-field">
               <input type="number" step="0.01" id="f-amount" placeholder="0.00">
-              <input type="text" id="f-currency" list="currencyList" placeholder="HKD">
+              <select id="f-currency">
+                <option value="EUR" selected>EUR</option>
+                <option value="HKD">HKD</option>
+                <option value="CNY">CNY</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
           </div>
         </div>
@@ -278,10 +264,6 @@
           <button class="btn btn-primary" id="addBtn">Add expense</button>
         </div>
       </div>
-      <datalist id="currencyList">
-        <option value="HKD"><option value="CNY"><option value="EUR"><option value="USD">
-        <option value="GBP"><option value="JPY"><option value="KRW"><option value="THB">
-      </datalist>
     </section>
 
     <section>
@@ -391,31 +373,8 @@
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function escapeAttr(s){ return escapeHtml(s); }
 
-  /* ---------------- Travelers (fixed at two) ---------------- */
+  /* ---------------- Travelers (fixed at two, not editable) ---------------- */
   function renderTravelers(){
-    const bar = $('travelersBar');
-    bar.innerHTML = '';
-    state.travelers.forEach((name, idx) => {
-      if(idx === 1){
-        const vs = document.createElement('span');
-        vs.className = 'traveler-vs'; vs.textContent = 'and';
-        bar.appendChild(vs);
-      }
-      const chip = document.createElement('div');
-      chip.className = 'traveler-chip';
-      const input = document.createElement('input');
-      input.type = 'text'; input.value = name; input.spellcheck = false;
-      input.addEventListener('change', () => {
-        const newName = input.value.trim() || name;
-        state.expenses.forEach(e => { if(e.paidBy === name) e.paidBy = newName; });
-        state.travelers[idx] = newName;
-        queueSave();
-        renderAll();
-      });
-      chip.appendChild(input);
-      bar.appendChild(chip);
-    });
-
     const paidBySel = $('f-paidby');
     paidBySel.innerHTML = state.travelers.map(t => `<option value="${escapeAttr(t)}">${escapeHtml(t)}</option>`).join('');
   }
@@ -435,75 +394,47 @@
     sorted.forEach(exp => list.appendChild(buildCard(exp)));
   }
 
+  function fmtDate(d){
+    if(!d) return '';
+    const parts = d.split('-');
+    if(parts.length !== 3) return d;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(parts[1],10)-1]} ${parseInt(parts[2],10)}`;
+  }
+
   function buildCard(exp){
     const card = document.createElement('div');
-    card.className = 'expense-card';
+    const payerIdx = state.travelers.indexOf(exp.paidBy);
+    card.className = 'expense-card by-' + (payerIdx === 1 ? '1' : '0');
     card.dataset.id = exp.id;
 
-    const top = document.createElement('div');
-    top.className = 'expense-card-top';
+    const info = document.createElement('div');
+    info.className = 'info';
 
-    const placeInput = document.createElement('input');
-    placeInput.type = 'text'; placeInput.value = exp.place; placeInput.style.flex = '1 1 auto'; placeInput.style.minWidth = '0';
-    placeInput.addEventListener('input', () => { exp.place = placeInput.value; queueSave(); });
+    const line1 = document.createElement('div');
+    line1.className = 'line1';
+    line1.innerHTML = `<span class="place">${escapeHtml(exp.place)}</span><span class="amt">${fmt(exp.amount)} ${escapeHtml(exp.currency)}</span>`;
 
+    const line2 = document.createElement('div');
+    line2.className = 'line2';
+    line2.innerHTML = `<span class="desc">${escapeHtml(exp.desc)}</span><span class="who-date">${escapeHtml(exp.paidBy)} · ${fmtDate(exp.date)}</span>`;
+
+    info.appendChild(line1);
+    info.appendChild(line2);
+
+    const footer = document.createElement('div');
+    footer.className = 'card-footer';
     const delBtn = document.createElement('button');
-    delBtn.className = 'row-delete'; delBtn.textContent = '×'; delBtn.title = 'Delete expense';
+    delBtn.className = 'delete-link'; delBtn.textContent = 'Delete';
     delBtn.addEventListener('click', () => {
+      if(!confirm(`Delete "${exp.place}" — ${exp.desc}?`)) return;
       state.expenses = state.expenses.filter(e => e.id !== exp.id);
       queueSave(); renderExpenseList(); updateSummary(); renderBalances();
     });
+    footer.appendChild(delBtn);
 
-    top.appendChild(placeInput);
-    top.appendChild(delBtn);
-
-    const descWrap = document.createElement('div');
-    descWrap.className = 'desc-field';
-    const descInput = document.createElement('input');
-    descInput.type = 'text'; descInput.value = exp.desc; descInput.style.width = '100%';
-    descInput.addEventListener('input', () => { exp.desc = descInput.value; queueSave(); });
-    descWrap.appendChild(descInput);
-
-    const meta = document.createElement('div');
-    meta.className = 'meta-row';
-
-    const dateInput = document.createElement('input');
-    dateInput.type = 'date'; dateInput.value = exp.date || '';
-    dateInput.addEventListener('change', () => { exp.date = dateInput.value; queueSave(); renderExpenseList(); updateSummary(); renderBalances(); });
-
-    const amtCell = document.createElement('div');
-    amtCell.className = 'amt-cell';
-    const amtInput = document.createElement('input');
-    amtInput.type = 'number'; amtInput.step = '0.01'; amtInput.value = exp.amount;
-    amtInput.addEventListener('input', () => { exp.amount = parseFloat(amtInput.value) || 0; queueSave(); updateSummary(); renderBalances(); });
-    const curInput = document.createElement('select');
-    ['HKD','CNY','EUR','USD','GBP','JPY','KRW','THB'].forEach(c => {
-      if(!curInput.querySelector(`option[value="${c}"]`)){
-        const o = document.createElement('option'); o.value = c; o.textContent = c; curInput.appendChild(o);
-      }
-    });
-    if(!curInput.querySelector(`option[value="${exp.currency}"]`)){
-      const o = document.createElement('option'); o.value = exp.currency; o.textContent = exp.currency; curInput.appendChild(o);
-    }
-    curInput.value = exp.currency;
-    curInput.addEventListener('change', () => { exp.currency = curInput.value; queueSave(); updateSummary(); renderBalances(); });
-    amtCell.appendChild(amtInput); amtCell.appendChild(curInput);
-
-    const paidSel = document.createElement('select');
-    state.travelers.forEach(t => {
-      const o = document.createElement('option'); o.value = t; o.textContent = 'Paid by ' + t;
-      if(t === exp.paidBy) o.selected = true;
-      paidSel.appendChild(o);
-    });
-    paidSel.addEventListener('change', () => { exp.paidBy = paidSel.value; queueSave(); updateSummary(); renderBalances(); });
-
-    meta.appendChild(dateInput);
-    meta.appendChild(amtCell);
-    meta.appendChild(paidSel);
-
-    card.appendChild(top);
-    card.appendChild(descWrap);
-    card.appendChild(meta);
+    card.appendChild(info);
+    card.appendChild(footer);
     return card;
   }
 
@@ -514,7 +445,7 @@
       const desc = $('f-desc').value.trim();
       const date = $('f-date').value;
       const amount = parseFloat($('f-amount').value);
-      const currency = ($('f-currency').value.trim() || 'HKD').toUpperCase();
+      const currency = ($('f-currency').value || 'EUR').toUpperCase();
       const paidBy = $('f-paidby').value;
 
       if(!place && !desc){ alert('Add at least a place or a description.'); return; }

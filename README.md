@@ -1,7 +1,24 @@
 # Travel Ledger — deploy to Cloudflare Workers
 
-Static site + a tiny sync API, no login, works offline. Push to `main` on
+Static site + a tiny sync API, password-protected. Push to `main` on
 GitHub and it redeploys itself.
+
+## Password protection
+
+The whole site (page + API) now requires a password via your browser's
+built-in login prompt. **You must set this once in the Cloudflare
+Dashboard — it is not in the code, on purpose, so it never ends up in
+GitHub:**
+
+1. Cloudflare Dashboard → Workers & Pages → your `travel-ledger` Worker →
+   **Settings → Variables and Secrets**
+2. **Add** → Type: **Secret** (not plain text) → Name: `LEDGER_PASSWORD` →
+   Value: whatever password you want → **Save and deploy**
+3. Visiting the site will now show your browser's native username/password
+   popup. Username can be left blank or anything; only the password matters.
+
+If `LEDGER_PASSWORD` isn't set, the site blocks everyone — so set it before
+you rely on the site.
 
 ## File map
 ```
