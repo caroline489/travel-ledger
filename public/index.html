@@ -344,11 +344,6 @@
     // 2) try to pull the shared copy from the server
     try{
       const res = await fetch(API, { cache: 'no-store' });
-      if(res.status === 401){
-        showSyncWarning('⚠️ Not logged in — this device is NOT synced with the shared ledger. Reload the page and log in, or your edits will only save locally and may be lost.');
-        $('statusLine').textContent = 'Not logged in';
-        return;
-      }
       if(res.ok){
         const text = await res.text();
         if(text && text !== '{}'){
@@ -379,10 +374,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(state)
         });
-        if(res.status === 401){
-          showSyncWarning('⚠️ Not logged in — this edit was NOT saved to the shared ledger, only on this device. Reload the page and log in to fix this.');
-          $('statusLine').textContent = 'NOT synced — not logged in';
-        } else if(res.ok){
+        if(res.ok){
           hideSyncWarning();
           $('statusLine').textContent = 'Saved · synced';
         } else {
