@@ -5,17 +5,17 @@ GitHub and it redeploys itself.
 
 ## Password protection
 
-The whole site (page + API) now requires a password via your browser's
-built-in login prompt. **You must set this once in the Cloudflare
-Dashboard — it is not in the code, on purpose, so it never ends up in
-GitHub:**
+The whole site (page + API) requires a password. It's a **password-only
+login page** (no username field) — not the browser's native login popup.
+**You must set the password once in the Cloudflare Dashboard — it is not
+in the code, on purpose, so it never ends up in GitHub:**
 
 1. Cloudflare Dashboard → Workers & Pages → your `travel-ledger` Worker →
    **Settings → Variables and Secrets**
 2. **Add** → Type: **Secret** (not plain text) → Name: `LEDGER_PASSWORD` →
    Value: whatever password you want → **Save and deploy**
-3. Visiting the site will now show your browser's native username/password
-   popup. Username can be left blank or anything; only the password matters.
+3. Visiting the site now shows a simple password page. Once entered
+   correctly, it stays logged in on that device for 30 days (via a cookie).
 
 If `LEDGER_PASSWORD` isn't set, the site blocks everyone — so set it before
 you rely on the site.

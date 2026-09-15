@@ -1,8 +1,12 @@
-const CACHE = 'travel-ledger-v1';
+const CACHE = 'travel-ledger-v2';
 const SHELL = ['/', '/index.html'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
+  event.waitUntil(
+    caches.open(CACHE).then((cache) =>
+      Promise.all(SHELL.map((url) => cache.add(url).catch(() => {})))
+    )
+  );
   self.skipWaiting();
 });
 
@@ -18,10 +22,27 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Never cache the API — let it fail naturally when offline so the app
-  // falls back to localStorage instead of showing stale synced data.
+  // 不快取 API，离线时让它自然失败，改用 localStorage
   if (url.pathname.startsWith('/api/')) return;
 
+  // 网页本身（导航请求）一律先打服务器，确保密码验证每次都是真的在问伺服器，
+  // 不会被旧快取绕过；只有网络真的连不上时才退回快取
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE).then((c) => c.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // 其他静态资源（图示等）维持快取优先，图个速度
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request)
